@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0757d5">
+  <title>NEET AARAMBH | PCB Combined</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script defer src="assets/js/config.js"></script>
+  <script defer src="assets/js/tests.js"></script>
+  <script defer src="assets/js/app.js"></script>
+</head>
+<body>
+<header class="header">
+  <a class="brand" href="./">
+    <span class="logo">NA</span>
+    <span><b>NEET AARAMBH</b><small>PCB COMBINED TEST SERIES</small></span>
+  </a>
+  <a class="support" href="https://t.me/aalok0602"
+     target="_blank" rel="noopener">Support ↗</a>
+</header>
+
+<main class="container">
+  <section class="hero">
+    <div>
+      <span class="eyebrow">NEET 2027 · TEST SERIES</span>
+      <h1>Prepare with purpose.<br>
+        <span>Perform with confidence.</span></h1>
+      <p>PCB Combined tests, syllabus previews and scheduled CBT access in one place.</p>
+      <a class="btn white" href="#tests">Explore Tests ↓</a>
+      <a class="btn outline"
+         href="planner/NEET-AARAMBH-Test-Planner.pdf"
+         target="_blank" rel="noopener">Complete Test Planner ↗</a>
+    </div>
+
+    <div class="count-card">
+      <span class="eyebrow">NEXT SCHEDULED TEST</span>
+      <h2 id="nextTitle">Loading schedule…</h2>
+      <p id="nextDate">Please wait</p>
+      <div id="countdown" class="countdown">-- : -- : -- : --</div>
+      <p id="countLabel">Days · Hours · Minutes · Seconds</p>
+      <a id="nextButton" class="btn white" href="#tests">View Test Series</a>
+    </div>
+  </section>
+
+  <section class="stats">
+    <div><b>23</b><span>Total Tests</span></div>
+    <div><b>14</b><span>Part Syllabus</span></div>
+    <div><b>9</b><span>Full Syllabus</span></div>
+    <div><b>10 AM–10 PM</b><span>Test Window · IST</span></div>
+  </section>
+
+  <section id="tests">
+    <div class="section-title">
+      <div>
+        <span class="eyebrow blue">YOUR PREPARATION ROADMAP</span>
+        <h2>PCB Combined Test Series</h2>
+        <p>Choose a test to preview its syllabus or open it when available.</p>
+      </div>
+    </div>
+
+    <div class="filters">
+      <button class="filter active" data-filter="all">All Tests</button>
+      <button class="filter" data-filter="live">Live</button>
+      <button class="filter" data-filter="upcoming">Upcoming</button>
+      <button class="filter" data-filter="completed">Completed</button>
+    </div>
+
+    <div id="testGrid" class="grid">
+      <p>Loading tests…</p>
+    </div>
+  </section>
+
+  <section class="notice">
+    <b>Test timing:</b>
+    All scheduled tests run from 10:00 AM to 10:00 PM Indian Standard Time.
+    Results depend on the features implemented in the uploaded CBT HTML.
+  </section>
+
+  <section class="bottom">
+    <h2>Stay focused. Stay consistent.</h2>
+    <p>Analyse every attempt and keep moving forward.</p>
+    <a class="btn white"
+       href="planner/NEET-AARAMBH-Test-Planner.pdf"
+       target="_blank" rel="noopener">Open Complete Planner ↗</a>
+  </section>
+</main>
+
+<footer>
+  <b>NEET AARAMBH</b>
+  <span>NEET 2027 · Learn. Practice. Improve.</span>
+  <a href="https://t.me/aalok0602"
+     target="_blank" rel="noopener">@aalok0602 Support</a>
+</footer>
+
+<dialog id="syllabusDialog">
+  <div class="dialog-head">
+    <h2 id="syllabusTitle">Test Syllabus</h2>
+    <button id="closeDialog" aria-label="Close">×</button>
+  </div>
+  <div id="syllabusBody"></div>
+  <a class="btn primary"
+     href="planner/NEET-AARAMBH-Test-Planner.pdf"
+     target="_blank" rel="noopener">Open Complete Planner ↗</a>
+</dialog>
+</body>
+</html>
