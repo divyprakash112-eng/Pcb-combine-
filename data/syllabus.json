@@ -1,0 +1,140 @@
+{
+  "1": {
+    "Physics": ["Mathematical Tools", "Units and Measurements", "Motion in a Straight Line", "Vectors"],
+    "Chemistry": ["Some Basic Concepts of Chemistry", "Redox Reaction", "Solutions"],
+    "Botany": ["Cell – The Unit of Life", "Cell Cycle and Cell Division"],
+    "Zoology": ["Structural Organisation in Animals", "Breathing and Exchange of Gases"]
+  },
+  "2": {
+    "Physics": ["Motion in a Plane"],
+    "Chemistry": ["Thermodynamics and Thermochemistry", "Chemical Equilibrium", "Ionic Equilibrium"],
+    "Botany": ["The Living World", "Biological Classification"],
+    "Zoology": ["Body Fluids and Circulation"]
+  },
+  "3": {
+    "Physics": ["Mathematical Tools", "Units and Measurements", "Motion in a Straight Line", "Vectors", "Motion in a Plane"],
+    "Chemistry": ["Some Basic Concepts of Chemistry", "Redox Reaction", "Solutions", "Thermodynamics and Thermochemistry", "Chemical Equilibrium", "Ionic Equilibrium"],
+    "Botany": ["Cell – The Unit of Life", "Cell Cycle and Cell Division", "The Living World", "Biological Classification"],
+    "Zoology": ["Structural Organisation in Animals", "Breathing and Exchange of Gases", "Body Fluids and Circulation"]
+  },
+  "4": {
+    "Physics": ["Laws of Motion", "Work, Energy and Power", "Centre of Mass and System of Particles"],
+    "Chemistry": ["Electrochemistry", "Chemical Kinetics"],
+    "Botany": ["Plant Kingdom"],
+    "Zoology": ["Excretory Products and their Elimination"]
+  },
+  "5": {
+    "Physics": ["Rotational Motion", "Gravitation"],
+    "Chemistry": ["Structure of Atom", "Classification of Elements and Periodicity in Properties"],
+    "Botany": ["Morphology of Flowering Plants"],
+    "Zoology": ["Locomotion and Movement"]
+  },
+  "6": {
+    "Physics": ["Laws of Motion", "Work, Energy and Power", "Centre of Mass and System of Particles", "Rotational Motion", "Gravitation"],
+    "Chemistry": ["Electrochemistry", "Chemical Kinetics", "Structure of Atom", "Classification of Elements and Periodicity in Properties"],
+    "Botany": ["Plant Kingdom", "Morphology of Flowering Plants"],
+    "Zoology": ["Excretory Products and their Elimination", "Locomotion and Movement"]
+  },
+  "7": {
+    "Physics": ["Mechanical Properties of Solids", "Mechanical Properties of Fluids", "Thermal Properties of Matter"],
+    "Chemistry": ["Chemical Bonding and Molecular Structure", "Organic Chemistry: Some Basic Principles and Techniques – IUPAC Naming"],
+    "Botany": ["Anatomy of Flowering Plants", "Photosynthesis in Higher Plants"],
+    "Zoology": ["Neural Control and Coordination"]
+  },
+  "8": {
+    "Physics": ["Kinetic Theory", "Thermodynamics", "Oscillations"],
+    "Chemistry": ["Organic Chemistry: Some Basic Principles and Techniques – Isomerism", "Classification and Structural Isomerism", "Geometrical Isomerism: cis-trans and Z-E", "CIP Rules", "Special Cases and Calculation of Geometrical Isomerism", "Conformations: Sawhorse and Newman Projections", "Ethane, Butane and Cyclohexane Conformations", "Optical Isomerism Basics", "Polarimeter Experiment", "Chiral Centre and Stereocentre", "Plane and Centre of Symmetry", "Fischer Projection", "R/S Configuration"],
+    "Botany": ["Plant Growth and Development"],
+    "Zoology": ["Chemical Coordination and Integration"]
+  },
+  "9": {
+    "Physics": ["Mechanical Properties of Solids", "Mechanical Properties of Fluids", "Thermal Properties of Matter", "Kinetic Theory", "Thermodynamics", "Oscillations"],
+    "Chemistry": ["Chemical Bonding and Molecular Structure", "Organic Chemistry: Some Basic Principles and Techniques – IUPAC Naming", "Organic Chemistry: Some Basic Principles and Techniques – Isomerism", "Structural and Geometrical Isomerism", "CIP Rules", "Conformations", "Optical Isomerism", "Fischer Projection", "R/S Configuration"],
+    "Botany": ["Anatomy of Flowering Plants", "Photosynthesis in Higher Plants", "Plant Growth and Development"],
+    "Zoology": ["Neural Control and Coordination", "Chemical Coordination and Integration"]
+  },
+  "10": {
+    "Physics": ["Waves", "Electric Charges and Fields", "Electrostatic Potential and Capacitance"],
+    "Chemistry": ["General Organic Chemistry (GOC)", "Hydrocarbons"],
+    "Botany": ["Respiration in Plants"],
+    "Zoology": ["Animal Kingdom"]
+  },
+  "11": {
+    "Physics": ["Current Electricity", "Moving Charges and Magnetism", "Magnetism and Matter"],
+    "Chemistry": ["Haloalkanes and Haloarenes", "Alcohols, Ethers and Phenols"],
+    "Botany": ["Sexual Reproduction in Flowering Plants"],
+    "Zoology": ["Biomolecules"]
+  },
+  "12": {
+    "Physics": ["Waves", "Electric Charges and Fields", "Electrostatic Potential and Capacitance", "Current Electricity", "Moving Charges and Magnetism", "Magnetism and Matter"],
+    "Chemistry": ["General Organic Chemistry (GOC)", "Hydrocarbons", "Haloalkanes and Haloarenes", "Alcohols, Ethers and Phenols"],
+    "Botany": ["Respiration in Plants", "Sexual Reproduction in Flowering Plants"],
+    "Zoology": ["Animal Kingdom", "Biomolecules"]
+  },
+  "13": {
+    "Physics": ["Electromagnetic Induction", "Alternating Current", "Electromagnetic Waves"],
+    "Chemistry": ["Aldehydes, Ketones and Carboxylic Acids", "Amines", "Biomolecules"],
+    "Botany": ["Principles of Inheritance and Variation", "Microbes in Human Welfare"],
+    "Zoology": ["Human Reproduction"]
+  },
+  "14": {
+    "Physics": ["Ray Optics and Optical Instruments", "Wave Optics", "Dual Nature of Radiation and Matter"],
+    "Chemistry": ["Purification and Qualitative and Quantitative Analysis", "Coordination Compounds", "The d- and f-Block Elements"],
+    "Botany": ["Organisms and Populations", "Ecosystem"],
+    "Zoology": ["Reproductive Health"]
+  },
+  "15": {
+    "Physics": ["Complete NEET Physics syllabus"],
+    "Chemistry": ["Complete NEET Chemistry syllabus"],
+    "Botany": ["Complete NEET Botany syllabus"],
+    "Zoology": ["Complete NEET Zoology syllabus"]
+  },
+  "16": {
+    "Physics": ["Complete NEET Physics syllabus"],
+    "Chemistry": ["Complete NEET Chemistry syllabus"],
+    "Botany": ["Complete NEET Botany syllabus"],
+    "Zoology": ["Complete NEET Zoology syllabus"]
+  },
+  "17": {
+    "Physics": ["Complete NEET Physics syllabus"],
+    "Chemistry": ["Complete NEET Chemistry syllabus"],
+    "Botany": ["Complete NEET Botany syllabus"],
+    "Zoology": ["Complete NEET Zoology syllabus"]
+  },
+  "18": {
+    "Physics": ["Complete NEET Physics syllabus"],
+    "Chemistry": ["Complete NEET Chemistry syllabus"],
+    "Botany": ["Complete NEET Botany syllabus"],
+    "Zoology": ["Complete NEET Zoology syllabus"]
+  },
+  "19": {
+    "Physics": ["Complete NEET Physics syllabus"],
+    "Chemistry": ["Complete NEET Chemistry syllabus"],
+    "Botany": ["Complete NEET Botany syllabus"],
+    "Zoology": ["Complete NEET Zoology syllabus"]
+  },
+  "20": {
+    "Physics": ["Complete NEET Physics syllabus"],
+    "Chemistry": ["Complete NEET Chemistry syllabus"],
+    "Botany": ["Complete NEET Botany syllabus"],
+    "Zoology": ["Complete NEET Zoology syllabus"]
+  },
+  "21": {
+    "Physics": ["Complete NEET Physics syllabus"],
+    "Chemistry": ["Complete NEET Chemistry syllabus"],
+    "Botany": ["Complete NEET Botany syllabus"],
+    "Zoology": ["Complete NEET Zoology syllabus"]
+  },
+  "22": {
+    "Physics": ["Complete NEET Physics syllabus"],
+    "Chemistry": ["Complete NEET Chemistry syllabus"],
+    "Botany": ["Complete NEET Botany syllabus"],
+    "Zoology": ["Complete NEET Zoology syllabus"]
+  },
+  "23": {
+    "Physics": ["Complete NEET Physics syllabus"],
+    "Chemistry": ["Complete NEET Chemistry syllabus"],
+    "Botany": ["Complete NEET Botany syllabus"],
+    "Zoology": ["Complete NEET Zoology syllabus"]
+  }
+}
