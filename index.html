@@ -14,54 +14,64 @@
 </head>
 <body>
 <header class="header">
-  <a class="brand" href="./">
+  <a class="brand" href="./" aria-label="NEET AARAMBH home">
     <span class="logo">NA</span>
-    <span><b>NEET AARAMBH</b><small>PCB COMBINED TEST SERIES</small></span>
+    <span class="brand-copy">
+      <b>NEET AARAMBH</b>
+      <small>PCB COMBINED TEST SERIES</small>
+    </span>
   </a>
-  <a class="support" href="https://t.me/aalok0602" target="_blank" rel="noopener">Support ↗</a>
+  <a class="support" href="https://t.me/aalok0602"
+     target="_blank" rel="noopener">Support ↗</a>
 </header>
 
 <main class="container">
   <section class="hero">
     <div class="hero-copy">
-      <span class="eyebrow">NEET 2027 · TEST SERIES</span>
+      <span class="eyebrow">NEET 2027 · PREMIUM TEST SERIES</span>
       <h1>Prepare with purpose.<br><span>Perform with confidence.</span></h1>
-      <p>PCB Combined tests, syllabus previews and scheduled CBT access in one place.</p>
+      <p>One roadmap. 23 scheduled tests. Practice at your pace.</p>
       <div class="hero-actions">
         <a class="btn white" href="#tests">Explore Tests ↓</a>
-        <a class="btn outline" href="planner/NEET-AARAMBH-Test-Planner.pdf" target="_blank" rel="noopener">Complete Test Planner ↗</a>
+        <a class="btn outline"
+           href="planner/NEET-AARAMBH-Test-Planner.pdf"
+           target="_blank" rel="noopener">Complete Test Planner ↗</a>
       </div>
     </div>
+
     <div class="count-card">
       <span class="eyebrow">NEXT SCHEDULED TEST</span>
       <h2 id="nextTitle">Loading schedule…</h2>
-      <p id="nextDate">Please wait</p>
+      <p id="nextDate">Checking dates…</p>
       <div id="countdown" class="countdown" aria-live="polite">-- : -- : -- : --</div>
-      <p id="countLabel">Days · Hours · Minutes · Seconds</p>
+      <p id="countLabel">Days · Hours · Minutes · Seconds · IST</p>
     </div>
   </section>
 
-  <section class="stats">
-    <div><b>23</b><span>Total Tests</span></div>
-    <div><b>14</b><span>Part Syllabus</span></div>
-    <div><b>9</b><span>Full Syllabus</span></div>
-    <div><b>10 AM–10 PM</b><span>Test Window · IST</span></div>
+  <section class="stats" aria-label="Test series overview">
+    <div class="stat-card"><b>23</b><span>Total Tests</span></div>
+    <div class="stat-card"><b>14</b><span>Part Syllabus</span></div>
+    <div class="stat-card"><b>9</b><span>Full Syllabus</span></div>
+    <div class="stat-card"><b>10 AM–10 PM</b><span>Scheduled Live Window · IST</span></div>
   </section>
 
-  <section id="tests">
+  <section id="tests" class="tests-section">
     <div class="section-title">
       <span class="eyebrow blue">YOUR PREPARATION ROADMAP</span>
       <h2>PCB Combined Test Series</h2>
-      <p>Search tests, preview the syllabus and open CBTs when they are available.</p>
+      <p>Choose a test, check its syllabus and practise whenever its CBT is available.</p>
     </div>
 
     <div class="test-tools">
-      <input id="testSearch" type="search" placeholder="Search test number or chapter…" aria-label="Search tests">
+      <input id="testSearch" type="search"
+             placeholder="Search test number or chapter…"
+             aria-label="Search tests">
+
       <div class="filters" role="group" aria-label="Filter tests">
         <button class="filter active" data-filter="all" aria-pressed="true">All Tests</button>
         <button class="filter" data-filter="live" aria-pressed="false">Live</button>
         <button class="filter" data-filter="upcoming" aria-pressed="false">Upcoming</button>
-        <button class="filter" data-filter="completed" aria-pressed="false">Completed</button>
+        <button class="filter" data-filter="previous" aria-pressed="false">Previous</button>
         <button class="filter" data-filter="part" aria-pressed="false">Part Syllabus</button>
         <button class="filter" data-filter="full" aria-pressed="false">Full Syllabus</button>
       </div>
@@ -73,7 +83,11 @@
   </section>
 
   <section class="notice">
-    <b>Test timing:</b> 10:00 AM–10:00 PM IST.
+    <span class="notice-icon">i</span>
+    <div>
+      <b>Test timing: 10:00 AM–10:00 PM IST</b>
+      <p>Tests remain available for reattempt after their scheduled live window, provided the CBT file has been uploaded.</p>
+    </div>
   </section>
 </main>
 
@@ -85,11 +99,16 @@
 
 <dialog id="syllabusDialog" aria-labelledby="syllabusTitle">
   <div class="dialog-head">
-    <h2 id="syllabusTitle">Test Syllabus</h2>
-    <button id="closeDialog" aria-label="Close syllabus">×</button>
+    <div>
+      <span class="eyebrow blue">TEST DETAILS</span>
+      <h2 id="syllabusTitle">Test Syllabus</h2>
+    </div>
+    <button id="closeDialog" type="button" aria-label="Close syllabus">×</button>
   </div>
   <div id="syllabusBody"></div>
-  <a class="btn primary planner-link" href="planner/NEET-AARAMBH-Test-Planner.pdf" target="_blank" rel="noopener">Open Complete Planner ↗</a>
+  <a class="btn primary planner-link"
+     href="planner/NEET-AARAMBH-Test-Planner.pdf"
+     target="_blank" rel="noopener">Open Complete Planner ↗</a>
 </dialog>
 </body>
 </html>
