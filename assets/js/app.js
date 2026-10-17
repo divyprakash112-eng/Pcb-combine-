@@ -3,125 +3,167 @@
   "use strict";
 
   const config = window.NA_CONFIG || {};
+  const TIMEZONE = config.timezone || "Asia/Kolkata";
+  const START_HOUR = Number(config.startHour ?? 10);
+  const END_HOUR = Number(config.endHour ?? 22);
+
   const grid = document.getElementById("testGrid");
   const dialog = document.getElementById("syllabusDialog");
   const syllabusTitle = document.getElementById("syllabusTitle");
   const syllabusBody = document.getElementById("syllabusBody");
-  const searchInput = document.getElementById("testSearch");
 
   let syllabusData = {};
   let activeFilter = "all";
-  let searchTerm = "";
+  let searchQuery = "";
   let fileStatus = new Map();
 
-  const pad = n => String(n).padStart(2, "0");
+  const pad = value => String(value).padStart(2, "0");
 
-  function indiaParts() {
+  function nowParts() {
     const parts = new Intl.DateTimeFormat("en-GB", {
-      timeZone: config.timezone || "Asia/Kolkata",
-      year: "numeric", month: "2-digit", day: "2-digit",
-      hour: "2-digit", minute: "2-digit", second: "2-digit",
+      timeZone: TIMEZONE,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
       hourCycle: "h23"
     }).formatToParts(new Date());
 
     return Object.fromEntries(
-      parts.filter(p => p.type !== "literal").map(p => [p.type, p.value])
+      parts.filter(part => part.type !== "literal")
+        .map(part => [part.type, part.value])
     );
   }
 
+  function todayString(parts = nowParts()) {
+    return `${parts.year}-${parts.month}-${parts.day}`;
+  }
+
+  function currentTimeMinutes(parts = nowParts()) {
+    return Number(parts.hour) * 60 + Number(parts.minute);
+  }
+
   function escapeHTML(value) {
-    return String(value).replace(/[&<>"']/g, c => ({
-      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
-    })[c]);
+    return String(value ?? "").replace(/[&<>"']/g, char => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
+    })[char]);
   }
 
-  function formatDate(value) {
-    const [y, m, d] = value.split("-").map(Number);
-    return new Date(Date.UTC(y, m - 1, d)).toLocaleDateString("en-IN", {
-      day: "numeric", month: "short", year: "numeric", timeZone: "UTC"
-    });
+  function formatDate(dateString) {
+    const [year, month, day] = dateString.split("-").map(Number);
+
+    return new Date(Date.UTC(year, month - 1, day))
+      .toLocaleDateString("en-IN", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+        timeZone: "UTC"
+      });
   }
 
-  function timestampIST(date, hour) {
-    return Date.parse(`${date}T${pad(hour)}:00:00+05:30`);
+  function scheduleState(test) {
+    const now = nowParts();
+    const today = todayString(now);
+
+    if (today < test.date) return "upcoming";
+    if (today > test.date) return "previous";
+
+    const minutes = currentTimeMinutes(now);
+
+    if (minutes < START_HOUR * 60) return "upcoming";
+    if (minutes < END_HOUR * 60) return "live";
+
+    return "previous";
   }
 
-  function nowIST() {
-    const p = indiaParts();
-    return {
-      date: `${p.year}-${p.month}-${p.day}`,
-      hour: Number(p.hour),
-      minute: Number(p.minute),
-      second: Number(p.second)
-    };
+  function cardState(test) {
+    const schedule = scheduleState(test);
+    const uploaded = fileStatus.get(test.id) === true;
+
+    if (!uploaded) return "missing";
+    return schedule;
   }
 
-  function currentISTTimestamp() {
-    const n = nowIST();
-    return Date.parse(`${n.date}T${pad(n.hour)}:${pad(n.minute)}:${pad(n.second)}+05:30`);
-  }
+  function statusLabel(status, test) {
+    if (status === "missing") return "CBT NOT UPLOADED";
+    if (status === "live") return "LIVE NOW";
+    if (status === "previous") return "PREVIOUS";
+    if (status === "upcoming" && scheduleState(test) === "upcoming") {
+      const now = nowParts();
 
-  function scheduleStatus(test) {
-    const now = currentISTTimestamp();
-    const startHour = Number(config.startHour ?? 10);
-    const endHour = Number(config.endHour ?? 22);
-    const start = timestampIST(test.date, startHour);
-    const end = timestampIST(test.date, endHour);
+      if (todayString(now) === test.date) {
+        return `STARTS AT ${pad(START_HOUR)}:00 AM`;
+      }
+    }
 
-    if (now < start) return "upcoming";
-    if (now >= end) return "past";
-    return "live";
+    return "UPCOMING";
   }
 
   async function checkCBTFile(test) {
+    const path = test.file;
+
     try {
-      const response = await fetch(test.file, { cache: "no-store" });
-      if (!response.ok) return false;
-      const contentType = response.headers.get("content-type") || "";
-      return contentType.includes("text/html") ||
-             contentType.includes("application/octet-stream") ||
-             contentType === "";
+      const head = await fetch(path, {
+        method: "HEAD",
+        cache: "no-store"
+      });
+
+      if (head.ok) return true;
+
+      // Some static hosts may not handle HEAD requests correctly.
+      if (head.status !== 405 && head.status !== 403) return false;
+    } catch (_) {
+      // Try a normal GET request below.
+    }
+
+    try {
+      const response = await fetch(path, {
+        method: "GET",
+        cache: "no-store"
+      });
+
+      return response.ok;
     } catch (error) {
-      console.warn("CBT file check failed:", test.file, error);
+      console.warn("Could not verify CBT file:", path, error);
       return false;
     }
   }
 
-  function cardStatus(test) {
-    const scheduled = scheduleStatus(test);
-    const uploaded = fileStatus.get(test.id) === true;
-
-    if (scheduled === "live") return uploaded ? "live" : "missing";
-    if (scheduled === "past") return uploaded ? "completed" : "missing";
-    return "upcoming";
+  function getSyllabus(testId) {
+    return syllabusData[String(testId)] || null;
   }
 
-  function statusLabel(status) {
-    return {
-      live: "LIVE NOW",
-      upcoming: "UPCOMING",
-      completed: "COMPLETED",
-      missing: "CBT HTML NOT UPLOADED"
-    }[status] || "UPCOMING";
-  }
-
-  function renderSyllabus(id) {
-    const syllabus = syllabusData[String(id)];
+  function renderSyllabus(testId) {
+    const syllabus = getSyllabus(testId);
 
     if (!syllabus) {
-      return `<p class="empty-state">Syllabus load nahi ho paya. data/syllabus.json check karein.</p>`;
+      return `
+        <p>Syllabus details are not available yet.
+        Please check the Complete Test Planner.</p>
+      `;
     }
 
     return Object.entries(syllabus).map(([subject, chapters]) => `
       <section class="syllabus-subject">
         <h3>${escapeHTML(subject)}</h3>
-        <ul>${(Array.isArray(chapters) ? chapters : [])
-          .map(chapter => `<li>${escapeHTML(chapter)}</li>`).join("")}</ul>
+        <ul>
+          ${(Array.isArray(chapters) ? chapters : [])
+            .map(chapter => `<li>${escapeHTML(chapter)}</li>`)
+            .join("")}
+        </ul>
       </section>
     `).join("");
   }
 
   function openSyllabus(test) {
+    if (!dialog || !syllabusTitle || !syllabusBody) return;
+
     syllabusTitle.textContent = `${test.title} — Syllabus`;
     syllabusBody.innerHTML = renderSyllabus(test.id);
 
@@ -133,26 +175,32 @@
   }
 
   function matchesSearch(test) {
-    if (!searchTerm) return true;
+    if (!searchQuery) return true;
 
-    const syllabus = syllabusData[String(test.id)] || {};
-    const words = [
-      test.title, `test ${test.id}`, test.type,
-      ...Object.entries(syllabus).flatMap(([subject, chapters]) => [
-        subject, ...(Array.isArray(chapters) ? chapters : [])
-      ])
-    ];
+    const query = searchQuery.toLowerCase();
+    const syllabus = getSyllabus(test.id);
+    const chapterText = syllabus
+      ? Object.values(syllabus).flat().join(" ")
+      : "";
 
-    return words.join(" ").toLowerCase().includes(searchTerm);
+    return [
+      test.title,
+      `test ${test.id}`,
+      test.type,
+      test.date,
+      chapterText
+    ].join(" ").toLowerCase().includes(query);
   }
 
-  function matchesFilter(test) {
-    const status = cardStatus(test);
-
+  function matchesFilter(test, status) {
+    if (activeFilter === "all") return true;
     if (activeFilter === "live") return status === "live";
-    if (activeFilter === "upcoming") return status === "upcoming" || status === "missing";
-    if (activeFilter === "completed") return status === "completed";
-    if (activeFilter === "part" || activeFilter === "full") return test.type === activeFilter;
+    if (activeFilter === "upcoming") return status === "upcoming";
+    if (activeFilter === "previous" || activeFilter === "completed") {
+      return status === "previous";
+    }
+    if (activeFilter === "part") return test.type !== "full";
+    if (activeFilter === "full") return test.type === "full";
 
     return true;
   }
@@ -160,40 +208,81 @@
   function renderTests() {
     if (!grid) return;
 
-    const list = tests.filter(test => matchesFilter(test) && matchesSearch(test));
+    const filtered = tests.filter(test => {
+      const status = cardState(test);
+      return matchesFilter(test, status) && matchesSearch(test);
+    });
 
-    if (!list.length) {
-      grid.innerHTML = `<div class="empty-state"><h3>No matching tests</h3><p>Try another filter or search term.</p></div>`;
+    if (!filtered.length) {
+      grid.innerHTML = `
+        <div class="empty-state">
+          <h3>No tests found</h3>
+          <p>Try another search or choose a different filter.</p>
+        </div>
+      `;
       return;
     }
 
-    grid.innerHTML = list.map(test => {
-      const status = cardStatus(test);
-      const canStart = status === "live" && fileStatus.get(test.id) === true;
-      const syllabus = syllabusData[String(test.id)] || {};
-      const chapters = Object.values(syllabus).flat();
-      const preview = chapters.length
-        ? chapters.slice(0, 3).join(" · ") + (chapters.length > 3 ? " …" : "")
-        : "Complete NEET syllabus";
+    grid.innerHTML = filtered.map(test => {
+      const status = cardState(test);
+      const uploaded = fileStatus.get(test.id) === true;
+      const canAttempt = uploaded;
+      const isFull = test.type === "full";
+      const syllabus = getSyllabus(test.id);
+      const preview = syllabus
+        ? Object.values(syllabus).flat().slice(0, 4).join(" · ")
+        : "Open syllabus to view chapter details";
+
+      const attemptLabel = status === "live"
+        ? "Start Test ↗"
+        : status === "previous"
+          ? "Attempt Test ↗"
+          : "Not Live Yet";
 
       return `
         <article class="test-card">
           <div class="test-card-top">
             <span class="test-number">TEST ${pad(test.id)}</span>
-            <span class="status status-${status}">${statusLabel(status)}</span>
+            <span class="status status-${status}">
+              ${statusLabel(status, test)}
+            </span>
           </div>
+
           <h3>${escapeHTML(test.title)}</h3>
-          <p class="test-date"><strong>Test date:</strong> ${formatDate(test.date)}</p>
-          <span class="test-type">${test.type === "full" ? "FULL SYLLABUS" : "PART SYLLABUS"}</span>
-          <p class="card-summary">${escapeHTML(preview)}</p>
+
+          <p class="test-date">
+            <strong>Test date:</strong> ${formatDate(test.date)}
+          </p>
+
+          <p class="test-type">
+            ${isFull ? "Full Syllabus" : "Part Syllabus"}
+          </p>
+
+          <p class="test-preview">${escapeHTML(preview)}</p>
+
           <div class="test-card-actions">
-            <button class="btn primary" data-action="syllabus" data-id="${test.id}" type="button">View Syllabus</button>
-            ${canStart
-              ? `<a class="btn test-start" href="${escapeHTML(test.file)}">Start Test ↗</a>`
-              : `<button class="btn disabled" type="button" disabled>${
-                  status === "missing" ? "CBT Not Uploaded" :
-                  status === "completed" ? "Test Ended" : "Not Live Yet"
-                }</button>`
+            <button class="btn primary"
+              type="button"
+              data-action="syllabus"
+              data-id="${test.id}">
+              View Syllabus
+            </button>
+
+            ${
+              canAttempt
+                ? `<a class="btn white"
+                     href="${escapeHTML(test.file)}"
+                     target="_blank"
+                     rel="noopener">
+                     ${attemptLabel}
+                   </a>`
+                : `<button class="btn disabled"
+                     type="button"
+                     disabled>
+                     ${status === "missing"
+                       ? "CBT Not Uploaded"
+                       : "Not Live Yet"}
+                   </button>`
             }
           </div>
         </article>
@@ -201,128 +290,168 @@
     }).join("");
   }
 
+  function timestampForIndia(date, hour) {
+    return Date.parse(`${date}T${pad(hour)}:00:00+05:30`);
+  }
+
   function renderCountdown() {
     const title = document.getElementById("nextTitle");
     const date = document.getElementById("nextDate");
     const countdown = document.getElementById("countdown");
     const label = document.getElementById("countLabel");
+
     if (!title || !date || !countdown) return;
 
-    const now = currentISTTimestamp();
-    const startHour = Number(config.startHour ?? 10);
-    const endHour = Number(config.endHour ?? 22);
+    const now = nowParts();
+    const today = todayString(now);
+    const nowMinutes = currentTimeMinutes(now);
 
-    const next = tests.find(test => timestampIST(test.date, endHour) > now);
+    // While a test is live, count down to the next scheduled test.
+    const next = tests.find(test => {
+      if (test.date > today) return true;
+      if (test.date < today) return false;
+      return nowMinutes < START_HOUR * 60;
+    });
 
     if (!next) {
-      title.textContent = "Test series schedule completed";
-      date.textContent = "Check the planner for details.";
+      title.textContent = "All scheduled tests have started";
+      date.textContent = "Previous tests remain available below.";
       countdown.textContent = "—";
       if (label) label.textContent = "NEET AARAMBH";
       return;
     }
 
-    const start = timestampIST(next.date, startHour);
-    const end = timestampIST(next.date, endHour);
-    const live = now >= start && now < end;
-    const target = live ? end : start;
-    const remaining = Math.max(0, target - now);
-    const total = Math.floor(remaining / 1000);
+    title.textContent = next.title;
+    date.textContent = formatDate(next.date);
 
-    const days = Math.floor(total / 86400);
-    const hours = Math.floor((total % 86400) / 3600);
-    const minutes = Math.floor((total % 3600) / 60);
-    const seconds = total % 60;
+    const target = timestampForIndia(next.date, START_HOUR);
+    const remaining = Math.max(0, target - Date.now());
+    const secondsTotal = Math.floor(remaining / 1000);
 
-    title.textContent = live ? `${next.title} is LIVE` : next.title;
-    date.textContent = live
-      ? `Test window closes at ${pad(endHour)}:00 IST`
-      : `${formatDate(next.date)} · ${pad(startHour)}:00 AM IST`;
+    const days = Math.floor(secondsTotal / 86400);
+    const hours = Math.floor((secondsTotal % 86400) / 3600);
+    const minutes = Math.floor((secondsTotal % 3600) / 60);
+    const seconds = secondsTotal % 60;
 
     countdown.textContent =
       `${pad(days)} : ${pad(hours)} : ${pad(minutes)} : ${pad(seconds)}`;
 
     if (label) {
-      label.textContent = live
-        ? "Time remaining · Days · Hours · Minutes · Seconds"
-        : "Days · Hours · Minutes · Seconds";
+      label.textContent = "Days · Hours · Minutes · Seconds · IST";
     }
   }
 
   function connectEvents() {
     document.querySelectorAll("[data-filter]").forEach(button => {
+      // Rename the old Completed filter to Previous.
+      if (
+        button.dataset.filter === "completed" ||
+        button.dataset.filter === "previous"
+      ) {
+        button.textContent = "Previous";
+        button.dataset.filter = "previous";
+      }
+
       button.addEventListener("click", () => {
         activeFilter = button.dataset.filter;
 
         document.querySelectorAll("[data-filter]").forEach(item => {
-          const active = item === button;
-          item.classList.toggle("active", active);
-          item.setAttribute("aria-pressed", String(active));
+          item.classList.toggle("active", item === button);
         });
 
         renderTests();
       });
     });
 
+    const searchInput =
+      document.getElementById("searchInput") ||
+      document.getElementById("searchTests") ||
+      document.querySelector('input[type="search"]') ||
+      document.querySelector('input[placeholder*="Search"]');
+
     if (searchInput) {
       searchInput.addEventListener("input", () => {
-        searchTerm = searchInput.value.trim().toLowerCase();
+        searchQuery = searchInput.value.trim();
         renderTests();
       });
     }
 
-    grid.addEventListener("click", event => {
-      const button = event.target.closest('[data-action="syllabus"]');
-      if (!button) return;
+    if (grid) {
+      grid.addEventListener("click", event => {
+        const button = event.target.closest('[data-action="syllabus"]');
+        if (!button) return;
 
-      const test = getTestById(button.dataset.id);
-      if (test) openSyllabus(test);
-    });
-
-    const closeButton = document.getElementById("closeDialog");
-    if (closeButton) {
-      closeButton.addEventListener("click", () => dialog.close());
+        const test = getTestById(button.dataset.id);
+        if (test) openSyllabus(test);
+      });
     }
 
-    dialog.addEventListener("click", event => {
-      if (event.target === dialog) dialog.close();
-    });
+    const closeButton = document.getElementById("closeDialog");
+
+    if (closeButton) {
+      closeButton.addEventListener("click", () => {
+        if (dialog && typeof dialog.close === "function") {
+          dialog.close();
+        } else if (dialog) {
+          dialog.removeAttribute("open");
+        }
+      });
+    }
+
+    if (dialog) {
+      dialog.addEventListener("click", event => {
+        if (event.target === dialog && typeof dialog.close === "function") {
+          dialog.close();
+        }
+      });
+    }
   }
 
   async function init() {
-    if (!grid) return;
-
-    if (!Array.isArray(tests) || tests.length === 0) {
-      grid.innerHTML = `<div class="error-state"><h3>Test schedule unavailable</h3><p>Check assets/js/tests.js.</p></div>`;
+    if (typeof tests === "undefined" || !Array.isArray(tests)) {
+      if (grid) {
+        grid.innerHTML = `
+          <div class="empty-state">
+            <h3>Test schedule unavailable</h3>
+            <p>Please check assets/js/tests.js.</p>
+          </div>
+        `;
+      }
       return;
     }
 
     try {
-      const response = await fetch("data/syllabus.json", { cache: "no-store" });
-      if (!response.ok) throw new Error(`Syllabus returned ${response.status}`);
+      const response = await fetch("./data/syllabus.json", {
+        cache: "no-store"
+      });
+
+      if (!response.ok) {
+        throw new Error(`Syllabus request failed: ${response.status}`);
+      }
+
       syllabusData = await response.json();
     } catch (error) {
-      console.error("Could not load data/syllabus.json", error);
+      console.error("Could not load syllabus:", error);
       syllabusData = {};
     }
 
-    fileStatus = new Map(tests.map(test => [test.id, false]));
     connectEvents();
-    renderTests();
-    renderCountdown();
 
-    const results = await Promise.all(
+    // Check each file independently so one missing test won't block others.
+    const checks = await Promise.all(
       tests.map(async test => [test.id, await checkCBTFile(test)])
     );
 
-    fileStatus = new Map(results);
+    fileStatus = new Map(checks);
+
     renderTests();
     renderCountdown();
 
+    // Keep status/countdown current without repeatedly checking all files.
     setInterval(() => {
-      renderCountdown();
       renderTests();
-    }, 1000);
+      renderCountdown();
+    }, 15000);
   }
 
   document.addEventListener("DOMContentLoaded", init);
